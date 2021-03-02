@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<title>Bubble wrap</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preload" href="popped.svg" as="image">
+<link rel="preload" href="bubble-wrap-single-pop.mp3" as="fetch">
+<style>
+  * {
+    font-family: 'MuseoModerno', cursive;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  body {
+    background-color: #E7EEEF;
+    color: #000;
+  }
+  main {
+    background-color: #E7EEEF;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+  }
+  header {
+    text-align: center;
+    padding: 1em;
+  }
+  header * {
+    margin: 0;
+    padding: 0;
+  }
+  header h1 {
+    text-transform: lowercase;
+    font-size: 28px;
+  }
+  header p {
+    font-size: .9em;
+  }
+  button {
+    background-color: transparent;
+    border: 1px solid #000;
+    padding: 8px 14px;
+    border-radius: 99999px;
+    user-select: none;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  button:disabled {
+    color: inherit;
+  }
+  #bubble-wrap {
+    mix-blend-mode: luminosity;
+    flex-grow: 1;
+    overflow: hidden;
+    line-height: 0px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  input.bubble {
+    appearance: none;
+    -webkit-appearance: none;
+    outline: 0;
+    margin: 0;
+    cursor: pointer;
+    border: 0;
+    margin-bottom: -10px;
+  }
+  input.bubble:checked,
+  input.bubble:active {
+    background: transparent url(popped.svg) no-repeat;
+  }
+  input.bubble:checked {
+    pointer-events: none;
+  }
+  .bubble {
+    background: transparent url(pre-pop.svg) no-repeat;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    display: inline-block;
+    background-size: 100%;
+    border-radius: 99999px;
+  }
+</style>
+<main>
+  <header>
+    <h1>Bubble wrap <button id="pop-reset-button" disabled>pop me! ッ</button></h1>
+    <p>Inspired by <a href="https://twitter.com/jchens_/status/1366402596827779075" target="_blank">jchen</a>'s work. Sound by <a href="https://freesound.org/people/Anthousai/sounds/399334/" target="_blank">anthousai</a>. Made by <a href="https://twitter.com/cheeaun" target="_blank">cheeaun</a>.</p>
+  </header>
+  <div id="bubble-wrap"></div>
+</main>
+<!-- <img src="pre-pop.svg" width="50" height="50" alt=""> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js" integrity="sha512-L6Z/YtIPQ7eU3BProP34WGU5yIRk7tNHk7vaC2dB1Vy1atz6wl9mCkTPPZ2Rn1qPr+vY2mZ9odZLdGYuaBk7dQ==" crossorigin="anonymous"></script>
+<script>
+  var bubbleSize = 50;
+  var $wrap = document.getElementById('bubble-wrap');
+  var $resetButton = document.getElementById('pop-reset-button');
+
+  var total = 0;
+  function render() {
+    var bubbleColCount = Math.floor($wrap.offsetWidth/bubbleSize);
+    var bubbleAltColCount = bubbleColCount-1;
+    var bubbleRowCount = Math.floor($wrap.offsetHeight/bubbleSize);
+    var bubbleAltRowCount = Math.floor(bubbleRowCount/2);
+    var count = bubbleColCount * bubbleRowCount - bubbleAltRowCount;
+    total = count;
+    var html = '';
+    var toggleRow = true;
+    let col = 1;
+    for (var i=0; i<count; i++) {
+      html += '<input type="radio" class="bubble">';
+      if ((toggleRow && col % bubbleColCount === 0) || (!toggleRow && col % bubbleAltColCount === 0)) {
+        html += '<br>';
+        toggleRow = !toggleRow;
+        col = 0;
+      }
+      col++;
+    }
+    $wrap.innerHTML = html;
+  }
+
+  var resetButton = false;
+  function resetResetButton() {
+    resetButton = false;
+    $resetButton.disabled = true;
+    $resetButton.textContent = 'pop me! ッ';
+  }
+
+  $resetButton.onclick = function(e){
+    e.preventDefault();
+    render();
+    resetResetButton();
+  }
+
+  var sound = new Howl({
+    src: ['bubble-wrap-single-pop.mp3'],
+    volume: 0.5,
+  });
+  var startTime;
+  var checkTimer;
+  document.body.onmousedown = function(e) {
+    var target = e.target;
+    if (target.tagName.toLowerCase() === 'input' && !target.checked) {
+      if (!startTime) startTime = Date.now();
+      sound.play();
+      if (!resetButton) {
+        resetButton = true;
+        $resetButton.disabled = false;
+        $resetButton.textContent = 'Reset!'
+      }
+      clearTimeout(checkTimer);
+      checkTimer = setTimeout(function(){
+        var poppedAll = $wrap.querySelectorAll('input:checked').length === total;
+        if (poppedAll) {
+          alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  "s! Do it again!");
+          startTime = null;
+          resetResetButton();
+          render();
+        }
+      }, 600);
+    }
+  }
+
+  render();
+
+  var resizeTimer;
+  window.onresize = function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      render();
+      resetResetButton();
+    }, 1000);
+  }
+</script>

@@ -138,7 +138,7 @@
   var startTime;
   var checkTimer;
   document.body.onpointerdown = function(e) {
-    console.log(e);
+    e.preventDefault();
     var target = e.target;
     if (target.classList.contains('bubble')) {
       if (!startTime) startTime = Date.now();
@@ -161,6 +161,9 @@
       }, 600);
     }
   }
+  document.body.addEventListener('touchmove', function(e){
+    e.preventDefault();
+  }, { passive: false });
 
   render();
 

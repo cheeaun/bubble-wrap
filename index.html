@@ -64,30 +64,22 @@
     text-align: center;
     white-space: nowrap;
   }
-  input.bubble {
-    appearance: none;
-    -webkit-appearance: none;
-    outline: 0;
-    margin: 0;
-    cursor: pointer;
-    border: 0;
-    margin-bottom: -10px;
-  }
-  input.bubble:checked,
-  input.bubble:active {
-    background: transparent url(popped.svg) no-repeat;
-  }
-  input.bubble:checked {
-    pointer-events: none;
-  }
   .bubble {
-    background: transparent url(pre-pop.svg) no-repeat;
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
     display: inline-block;
+    background: transparent url(pre-pop.svg) no-repeat;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
     background-size: 100%;
     border-radius: 99999px;
+    margin-bottom: -10px;
+  }
+  .bubble:active,
+  .bubble.checked {
+    background: transparent url(popped.svg) no-repeat;
+  }
+  .bubble.checked {
+    pointer-events: none;
   }
 </style>
 <main>
@@ -97,10 +89,9 @@
   </header>
   <div id="bubble-wrap"></div>
 </main>
-<!-- <img src="pre-pop.svg" width="50" height="50" alt=""> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js" integrity="sha512-L6Z/YtIPQ7eU3BProP34WGU5yIRk7tNHk7vaC2dB1Vy1atz6wl9mCkTPPZ2Rn1qPr+vY2mZ9odZLdGYuaBk7dQ==" crossorigin="anonymous"></script>
 <script>
-  var bubbleSize = 50;
+  var bubbleSize = 60;
   var $wrap = document.getElementById('bubble-wrap');
   var $resetButton = document.getElementById('pop-reset-button');
 
@@ -116,7 +107,7 @@
     var toggleRow = true;
     let col = 1;
     for (var i=0; i<count; i++) {
-      html += '<input type="radio" class="bubble">';
+      html += '<span class="bubble"></span>';
       if ((toggleRow && col % bubbleColCount === 0) || (!toggleRow && col % bubbleAltColCount === 0)) {
         html += '<br>';
         toggleRow = !toggleRow;
@@ -146,10 +137,12 @@
   });
   var startTime;
   var checkTimer;
-  document.body.onmousedown = function(e) {
+  document.body.onpointerdown = function(e) {
+    console.log(e);
     var target = e.target;
-    if (target.tagName.toLowerCase() === 'input' && !target.checked) {
+    if (target.classList.contains('bubble')) {
       if (!startTime) startTime = Date.now();
+      target.classList.add('checked');
       sound.play();
       if (!resetButton) {
         resetButton = true;
@@ -158,7 +151,7 @@
       }
       clearTimeout(checkTimer);
       checkTimer = setTimeout(function(){
-        var poppedAll = $wrap.querySelectorAll('input:checked').length === total;
+        var poppedAll = $wrap.querySelectorAll('.checked').length === total;
         if (poppedAll) {
           alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  "s! Do it again!");
           startTime = null;

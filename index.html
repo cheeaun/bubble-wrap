@@ -87,6 +87,31 @@
   .bubble.checked {
     pointer-events: none;
   }
+  @keyframes fallin {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .bubble:nth-child(n) {
+    animation: fallin .3s both ease-in-out;
+  }
+  .bubble:nth-child(2n) {
+    animation: fallin .3s .1s both ease-in-out;
+  }
+  .bubble:nth-child(3n) {
+    animation: fallin .3s .2s both ease-in-out;
+  }
+  .bubble:nth-child(4n) {
+    animation: fallin .3s .3s both ease-in-out;
+  }
+  .bubble:nth-child(5n) {
+    animation: fallin .3s .4s both ease-in-out;
+  }
 </style>
 <main>
   <header>

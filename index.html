@@ -19,7 +19,6 @@
     color: #000;
   }
   main {
-    background-color: #E7EEEF;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -57,7 +56,6 @@
     color: inherit;
   }
   #bubble-wrap {
-    mix-blend-mode: luminosity;
     flex-grow: 1;
     overflow: hidden;
     line-height: 0px;
@@ -66,17 +64,25 @@
   }
   .bubble {
     display: inline-block;
-    background: transparent url(pre-pop.svg) no-repeat;
+    background: transparent no-repeat center;
+    background-image:
+      url(prepop.svg),
+      radial-gradient(closest-side, rgba(150,150,150,.1), rgba(255,255,255,.5) 75%, rgba(255,255,255,0) 80%),
+      radial-gradient(closest-side at 53% 53%, rgba(255,255,255,0) 50%, rgba(100,100,100,.1) 75%, rgba(255,255,255,0));
     width: 60px;
     height: 60px;
     overflow: hidden;
-    background-size: 100%;
+    background-size: 70%, contain, contain;
     border-radius: 99999px;
     margin-bottom: -10px;
+    cursor: pointer;
   }
   .bubble:active,
   .bubble.checked {
-    background: transparent url(popped.svg) no-repeat;
+    background-image:
+      url(popped.svg),
+      radial-gradient(closest-side, rgba(100,100,100,.1), rgba(255,255,255,.5) 75%, rgba(255,255,255,0) 80%),
+      radial-gradient(closest-side at 53% 53%, rgba(255,255,255,0) 50%, rgba(100,100,100,.1) 75%, rgba(255,255,255,0));
   }
   .bubble.checked {
     pointer-events: none;

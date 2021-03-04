@@ -45,7 +45,7 @@
     font-size: 28px;
   }
   header p {
-    font-size: .9em;
+    font-size: .8em;
   }
   button {
     background-color: transparent;
@@ -121,7 +121,7 @@
 <main>
   <header>
     <h1>Bubble wrap <button id="pop-reset-button" disabled>pop me! ッ</button></h1>
-    <p>Inspired by <a href="https://twitter.com/jchens_/status/1366402596827779075" target="_blank">jchen</a>'s work. Sound by <a href="https://freesound.org/people/Anthousai/sounds/399334/" target="_blank">anthousai</a>. <a href="https://github.com/cheeaun/bubble-wrap" target="_blank">Made</a> by <a href="https://twitter.com/cheeaun" target="_blank">cheeaun</a>.</p>
+    <p>Inspired by <a href="https://twitter.com/jchens_/status/1366402596827779075" target="_blank">jchen</a>'s work. Sound by <a href="https://freesound.org/people/Anthousai/sounds/399334/" target="_blank">anthousai</a> &amp; <a href="https://freesound.org/people/CGEffex/sounds/89534/">cgeffex</a>. <a href="https://github.com/cheeaun/bubble-wrap" target="_blank">Made</a> by <a href="https://twitter.com/cheeaun" target="_blank">cheeaun</a>.</p>
   </header>
   <div id="bubble-wrap"></div>
 </main>
@@ -179,6 +179,10 @@
     src: ['bubble-wrap-single-pop.mp3'],
     volume: 0.5,
   });
+  var sound2 = new Howl({
+    src: ['bubble-wrap-single-unpop.mp3'],
+    volume: 0.5,
+  });
   var startTime;
   var checkTimer;
   var playTime = 0;
@@ -206,6 +210,7 @@
       var popped = $wrap.querySelectorAll('.checked');
       if (!popped.length) return;
       var randomIndex = Math.floor(Math.random() * popped.length);
+      sound2.play();
       popped[randomIndex].classList.remove('checked');
     }, Math.max(1, total - playTime) * 1000));
   }

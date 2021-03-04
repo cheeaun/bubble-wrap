@@ -205,7 +205,7 @@
         if (!popped.length) return;
         var randomIndex = Math.floor(Math.random() * popped.length);
         popped[randomIndex].classList.remove('checked');
-      }, Math.max(1, 20 - playTime) * 1000));
+      }, Math.max(1, total - playTime) * 1000));
     }
   }
   document.body.addEventListener('touchmove', function(e){

@@ -177,10 +177,7 @@
   var startTime;
   var checkTimer;
   var playTime = 0;
-  document.body.onpointerdown = function(e) {
-    e.preventDefault();
-    var target = e.target;
-    if (target.classList.contains('bubble')) {
+  function pop(target) {
       if (!startTime) startTime = Date.now();
       target.classList.add('checked');
       sound.play();
@@ -206,6 +203,27 @@
         var randomIndex = Math.floor(Math.random() * popped.length);
         popped[randomIndex].classList.remove('checked');
       }, Math.max(1, total - playTime) * 1000));
+    }
+  document.body.onpointerdown = function(e) {
+    e.preventDefault();
+    var target = e.target;
+    if (target.classList.contains('bubble')) {
+      pop(target);
+    }
+  }
+  var prevKeys = [];
+  document.body.onkeypress = function(e) {
+    var key = e.key;
+    if (key) e.preventDefault();
+    if (key && !prevKeys.includes(key)) {
+      prevKeys.push(key);
+      prevKeys = prevKeys.slice(-5); // Only prevent previous 5 unique keys
+      var prepops = $wrap.querySelectorAll('.bubble:not(.checked)');
+      var randomIndex = Math.floor(Math.random() * prepops.length);
+      var target = prepops[randomIndex];
+      if (target) {
+        pop(target);
+      }
     }
   }
   document.body.addEventListener('touchmove', function(e){

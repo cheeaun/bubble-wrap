@@ -5,6 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;700&display=swap" rel="stylesheet">
 <link rel="preload" href="popped.svg" as="image">
 <link rel="preload" href="bubble-wrap-single-pop.mp3" as="fetch">
+<link rel="icon" href="favicon.png">
 <style>
   * {
     font-family: 'MuseoModerno', cursive;
@@ -182,32 +183,32 @@
   var checkTimer;
   var playTime = 0;
   function pop(target) {
-      if (!startTime) startTime = Date.now();
-      target.classList.add('checked');
-      sound.play();
-      if (!resetButton) {
-        resetButton = true;
-        $resetButton.disabled = false;
-        $resetButton.textContent = 'Reset!'
-      }
-      clearTimeout(checkTimer);
-      checkTimer = setTimeout(function(){
-        var poppedAll = $wrap.querySelectorAll('.checked').length === total;
-        if (poppedAll) {
-          alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  "s! Do it again!");
-          startTime = null;
-          playTime++;
-          render();
-        }
-      }, 600);
-
-      unpopTimers.push(setTimeout(function(){
-        var popped = $wrap.querySelectorAll('.checked');
-        if (!popped.length) return;
-        var randomIndex = Math.floor(Math.random() * popped.length);
-        popped[randomIndex].classList.remove('checked');
-      }, Math.max(1, total - playTime) * 1000));
+    if (!startTime) startTime = Date.now();
+    target.classList.add('checked');
+    sound.play();
+    if (!resetButton) {
+      resetButton = true;
+      $resetButton.disabled = false;
+      $resetButton.textContent = 'Reset!'
     }
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(function(){
+      var poppedAll = $wrap.querySelectorAll('.checked').length === total;
+      if (poppedAll) {
+        alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  "s! Do it again!");
+        startTime = null;
+        playTime++;
+        render();
+      }
+    }, 600);
+
+    unpopTimers.push(setTimeout(function(){
+      var popped = $wrap.querySelectorAll('.checked');
+      if (!popped.length) return;
+      var randomIndex = Math.floor(Math.random() * popped.length);
+      popped[randomIndex].classList.remove('checked');
+    }, Math.max(1, total - playTime) * 1000));
+  }
   document.body.onpointerdown = function(e) {
     e.preventDefault();
     var target = e.target;

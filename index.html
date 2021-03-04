@@ -185,7 +185,7 @@
   });
   var startTime;
   var checkTimer;
-  var playTime = 0;
+  var playTime = 1;
   function pop(target) {
     if (!startTime) startTime = Date.now();
     target.classList.add('checked');
@@ -212,7 +212,7 @@
       var randomIndex = Math.floor(Math.random() * popped.length);
       sound2.play();
       popped[randomIndex].classList.remove('checked');
-    }, Math.max(1, total - playTime) * 1000));
+    }, Math.max(1, total / playTime) * 1000));
   }
   document.body.onpointerdown = function(e) {
     e.preventDefault();

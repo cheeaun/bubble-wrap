@@ -240,6 +240,9 @@
       pop(target);
     }
   }
+  document.body.onpointerup = function(e) {
+    e.preventDefault();
+  }
   var prevKeys = [];
   document.body.onkeypress = function(e) {
     var key = e.key;

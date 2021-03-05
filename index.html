@@ -119,6 +119,15 @@
   .bubble:nth-child(5n) {
     animation: fallin .3s .4s both ease-in-out;
   }
+  #level {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    text-align: center;
+    pointer-events: none;
+    opacity: .5;
+    padding: .3em;
+  }
 </style>
 <main>
   <header>
@@ -126,12 +135,19 @@
     <p>Inspired by <a href="https://twitter.com/oochenz/status/1366402596827779075" target="_blank">oochenz</a>'s work. Sound by <a href="https://freesound.org/people/Anthousai/sounds/399334/" target="_blank">anthousai</a> &amp; <a href="https://freesound.org/people/CGEffex/sounds/89534/" target="_blank">cgeffex</a>. <a href="https://github.com/cheeaun/bubble-wrap" target="_blank">Made</a> by <a href="https://twitter.com/cheeaun" target="_blank">cheeaun</a>.</p>
   </header>
   <div id="bubble-wrap"></div>
+  <div id="level">Level 1</div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.core.min.js" integrity="sha512-wzeZyTAYqFv+VKD/mGwXREXBIzy4pE3E617SBskkLFuYcPQgX6px2Il3gwZwXb9DuyjYPIsbTEO/6c3+mUvoPA==" crossorigin="anonymous"></script>
 <script>
   var bubbleSize = 60;
   var $wrap = document.getElementById('bubble-wrap');
   var $resetButton = document.getElementById('pop-reset-button');
+  var $level = document.getElementById('level');
+
+  var level = 1;
+  function renderLevel() {
+    $level.textContent = 'Level ' + level;
+  }
 
   var unpopTimers = [];
   function resetUnpop(){
@@ -143,6 +159,7 @@
   function render() {
     resetUnpop();
     resetResetButton();
+    renderLevel();
 
     var bubbleColCount = Math.floor($wrap.offsetWidth/bubbleSize);
     var bubbleAltColCount = bubbleColCount-1;
@@ -187,7 +204,6 @@
   });
   var startTime;
   var checkTimer;
-  var playTime = 1;
   function pop(target) {
     if (!startTime) startTime = Date.now();
     target.classList.add('checked');
@@ -201,12 +217,12 @@
     checkTimer = setTimeout(function(){
       var poppedAll = $wrap.querySelectorAll('.checked').length === total;
       if (poppedAll) {
-        alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  "s! Do it again!");
+        alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  " seconds! Do it again!");
         startTime = null;
-        playTime++;
+        level++;
         render();
       }
-    }, 600);
+    }, 300);
 
     unpopTimers.push(setTimeout(function(){
       var popped = $wrap.querySelectorAll('.checked');
@@ -214,7 +230,8 @@
       var randomIndex = Math.floor(Math.random() * popped.length);
       sound2.play();
       popped[randomIndex].classList.remove('checked');
-    }, Math.max(1000, total * 1000 / playTime)));
+      unpopTimers.shift();
+    }, Math.max(1000, total * 1000 / level)));
   }
   document.body.onpointerdown = function(e) {
     e.preventDefault();

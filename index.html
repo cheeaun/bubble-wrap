@@ -24,6 +24,7 @@
   body {
     background-color: #E7EEEF;
     color: #000;
+    font-size: .8em;
   }
   main {
     display: flex;
@@ -45,9 +46,6 @@
   header h1 {
     text-transform: lowercase;
     font-size: 28px;
-  }
-  header p {
-    font-size: .8em;
   }
   button {
     background-color: transparent;
@@ -71,15 +69,15 @@
   }
   .bubble {
     display: inline-block;
-    background: transparent no-repeat center;
+    background: transparent no-repeat 47% 47%;
     background-image:
       url(prepop.svg),
       radial-gradient(closest-side, rgba(50,50,50,.1), rgba(255,255,255,.5) 75%, rgba(255,255,255,0) 80%),
       radial-gradient(closest-side at 53% 53%, rgba(255,255,255,0) 50%, rgba(0,0,0,.1) 80%, rgba(255,255,255,0));
+    background-size: 70%, contain, contain;
     width: 60px;
     height: 60px;
     overflow: hidden;
-    background-size: 70%, contain, contain;
     border-radius: 99999px;
     margin-bottom: -10px;
     cursor: pointer;
@@ -91,9 +89,6 @@
       radial-gradient(closest-side, rgba(0,0,0,.2), rgba(255,255,255,.5) 75%, rgba(255,255,255,0) 80%),
       radial-gradient(closest-side at 53% 53%, rgba(255,255,255,0) 50%, rgba(0,0,0,.1) 80%, rgba(255,255,255,0));
   }
-  .bubble.checked {
-    pointer-events: none;
-  }
   @keyframes fallin {
     0% {
       opacity: 0;
@@ -104,20 +99,35 @@
       transform: translateY(0);
     }
   }
-  .bubble:nth-child(n) {
+  .reset .bubble:nth-child(n) {
     animation: fallin .3s both ease-in-out;
   }
-  .bubble:nth-child(2n) {
+  .reset .bubble:nth-child(2n) {
     animation: fallin .3s .1s both ease-in-out;
   }
-  .bubble:nth-child(3n) {
+  .reset .bubble:nth-child(3n) {
     animation: fallin .3s .2s both ease-in-out;
   }
-  .bubble:nth-child(4n) {
+  .reset .bubble:nth-child(4n) {
     animation: fallin .3s .3s both ease-in-out;
   }
-  .bubble:nth-child(5n) {
+  .reset .bubble:nth-child(5n) {
     animation: fallin .3s .4s both ease-in-out;
+  }
+  @keyframes press {
+    0% {
+      background-color: rgba(255,255,255,0);
+    }
+    10% {
+      background-color: rgba(0,0,0,.1);
+    }
+    100% {
+      background-color: rgba(255,255,255,0);
+    }
+  }
+  .bubble.checked {
+    pointer-events: none;
+    animation: press 1s forwards ease-in-out;
   }
   #level {
     position: absolute;
@@ -179,6 +189,10 @@
       }
       col++;
     }
+    $wrap.classList.add('reset');
+    setTimeout(function(){
+      $wrap.classList.remove('reset');
+    }, 1000);
     $wrap.innerHTML = html;
   }
 

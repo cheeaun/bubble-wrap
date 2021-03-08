@@ -67,28 +67,27 @@
     line-height: 0px;
     text-align: center;
     white-space: nowrap;
+    padding: 12px;
   }
   .bubble {
     display: inline-block;
-    background: transparent no-repeat 47% 47%;
+    background: transparent no-repeat center;
     background-image:
       url(prepop.svg),
-      radial-gradient(closest-side, rgba(50,50,50,.1), rgba(255,255,255,.5) 75%, rgba(255,255,255,0) 80%),
-      radial-gradient(closest-side at 53% 53%, rgba(255,255,255,0) 50%, rgba(0,0,0,.1) 80%, rgba(255,255,255,0));
-    background-size: 70%, contain, contain;
-    width: 60px;
-    height: 60px;
+      radial-gradient(closest-side, rgba(0,0,0,0), rgba(0,0,0,.05) 70%, rgba(255,255,255,0) 80%);
+    box-shadow: inset 0 0 6px #fff, 2px 2px 4px #fff, 4px 4px 12px rgba(0,0,0,.25);
+    width: 50px;
+    height: 50px;
+    margin: 0 2px;
     overflow: hidden;
     border-radius: 99999px;
-    margin-bottom: -10px;
     cursor: pointer;
   }
   .bubble:active,
-  .bubble.checked {
+  .bubble.pop {
     background-image:
       url(popped.svg),
-      radial-gradient(closest-side, rgba(0,0,0,.2), rgba(255,255,255,.5) 75%, rgba(255,255,255,0) 80%),
-      radial-gradient(closest-side at 53% 53%, rgba(255,255,255,0) 50%, rgba(0,0,0,.1) 80%, rgba(255,255,255,0));
+      radial-gradient(closest-side, rgba(0,0,0,.15), rgba(0,0,0,.1));
   }
   @keyframes fallin {
     0% {
@@ -115,20 +114,42 @@
   .reset .bubble:nth-child(5n) {
     animation: fallin .3s .4s both ease-in-out;
   }
-  @keyframes press {
+  @keyframes pop {
     0% {
       background-color: rgba(255,255,255,0);
+      transform: scale(1);
+    }
+    5% {
+      background-color: rgba(0,0,0,.1);
+      transform: scale(.95);
     }
     10% {
-      background-color: rgba(0,0,0,.1);
+      transform: scale(1);
     }
     100% {
       background-color: rgba(255,255,255,0);
     }
   }
-  .bubble.checked {
+  .bubble.pop {
     pointer-events: none;
-    animation: press 1s forwards ease-in-out;
+    animation: pop 1s forwards ease-in-out;
+  }
+  @keyframes unpop {
+    0% {
+      transform: scale(1);
+      background-color: rgba(255,255,255,0);
+    }
+    50% {
+      transform: scale(1.05);
+      background-color: rgba(255,255,255,.5);
+    }
+    100% {
+      transform: scale(1);
+      background-color: rgba(255,255,255,0);
+    }
+  }
+  .bubble.unpop {
+    animation: unpop .2s;
   }
   #level {
     position: absolute;
@@ -150,7 +171,7 @@
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.core.min.js" integrity="sha512-wzeZyTAYqFv+VKD/mGwXREXBIzy4pE3E617SBskkLFuYcPQgX6px2Il3gwZwXb9DuyjYPIsbTEO/6c3+mUvoPA==" crossorigin="anonymous"></script>
 <script>
-  var bubbleSize = 60;
+  var bubbleSize = 50;
   var $wrap = document.getElementById('bubble-wrap');
   var $resetButton = document.getElementById('pop-reset-button');
   var $level = document.getElementById('level');
@@ -172,23 +193,26 @@
     resetResetButton();
     renderLevel();
 
-    var bubbleColCount = Math.floor($wrap.offsetWidth/bubbleSize);
+    var wrapHorizontalPadding = 12 * 2;
+    var wrapVerticalPadding = 24 * 2;
+    var bubbleMargin = 2 * 2;
+    var wrapWidth = $wrap.offsetWidth - wrapHorizontalPadding;
+    var wrapHeight = $wrap.offsetHeight - wrapVerticalPadding;
+    var bubbleColCount = Math.floor(wrapWidth/(bubbleSize+bubbleMargin));
     var bubbleAltColCount = bubbleColCount-1;
-    var bubbleRowCount = Math.floor($wrap.offsetHeight/bubbleSize);
+    var bubbleRowCount = Math.floor(wrapHeight/bubbleSize);
     var bubbleAltRowCount = Math.floor(bubbleRowCount/2);
     var count = bubbleColCount * bubbleRowCount - bubbleAltRowCount;
     total = count;
     var html = '';
     var toggleRow = true;
-    let col = 1;
-    for (var i=0; i<count; i++) {
+    for (var i=0, col = 1; i<count; i++, col++) {
       html += '<span class="bubble"></span>';
-      if ((toggleRow && col % bubbleColCount === 0) || (!toggleRow && col % bubbleAltColCount === 0)) {
+      if ((toggleRow && col === bubbleColCount) || (!toggleRow && col === bubbleAltColCount)) {
         html += '<br>';
         toggleRow = !toggleRow;
         col = 0;
       }
-      col++;
     }
     $wrap.classList.add('reset');
     setTimeout(function(){
@@ -215,13 +239,16 @@
   });
   var sound2 = new Howl({
     src: ['bubble-wrap-single-unpop.mp3'],
-    volume: 0.5,
+    volume: 0.3,
   });
   var startTime;
   var checkTimer;
+  var lastPopTarget;
   function pop(target) {
     if (!startTime) startTime = Date.now();
-    target.classList.add('checked');
+    target.classList.remove('unpop');
+    target.classList.add('pop');
+    lastPopTarget = target;
     sound.play();
     if (!resetButton) {
       resetButton = true;
@@ -230,7 +257,7 @@
     }
     clearTimeout(checkTimer);
     checkTimer = setTimeout(function(){
-      var poppedAll = $wrap.querySelectorAll('.checked').length === total;
+      var poppedAll = $wrap.querySelectorAll('.pop').length === total;
       if (poppedAll) {
         alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  " seconds! Do it again!");
         startTime = null;
@@ -240,23 +267,27 @@
     }, 300);
 
     unpopTimers.push(setTimeout(function(){
-      var popped = $wrap.querySelectorAll('.checked');
+      var popped = [];
+      $wrap.querySelectorAll('.pop').forEach(function(poppedEl, i, arr){
+        if (poppedEl !== lastPopTarget || arr.length <= 1){
+          popped.push(poppedEl);
+        }
+      });
       if (!popped.length) return;
       var randomIndex = Math.floor(Math.random() * popped.length);
       sound2.play();
-      popped[randomIndex].classList.remove('checked');
+      popped[randomIndex].classList.remove('pop');
+      popped[randomIndex].classList.add('unpop');
       unpopTimers.shift();
     }, Math.max(1000, total * 1000 / level)));
   }
+
   document.body.onpointerdown = function(e) {
     e.preventDefault();
     var target = e.target;
-    if (target.classList.contains('bubble')) {
+    if (target.matches('.bubble:not(.pop)')) {
       pop(target);
     }
-  }
-  document.body.onpointerup = function(e) {
-    e.preventDefault();
   }
   var prevKeys = [];
   document.body.onkeypress = function(e) {
@@ -265,7 +296,7 @@
     if (key && !prevKeys.includes(key)) {
       prevKeys.push(key);
       prevKeys = prevKeys.slice(-5); // Only prevent previous 5 unique keys
-      var prepops = $wrap.querySelectorAll('.bubble:not(.checked)');
+      var prepops = $wrap.querySelectorAll('.bubble:not(.pop)');
       var randomIndex = Math.floor(Math.random() * prepops.length);
       var target = prepops[randomIndex];
       if (target) {
@@ -273,7 +304,9 @@
       }
     }
   }
-  document.body.addEventListener('touchmove', function(e){
+  document.body.addEventListener('touchstart', function(e){
+    var tagName = e.target.tagName.toLowerCase();
+    if (tagName === 'a' || tagName === 'button') return;
     e.preventDefault();
   }, { passive: false });
 

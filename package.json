@@ -1,0 +1,19 @@
+{
+  "name": "bubblewrap",
+  "description": "Just a bubble wrap popping web page.",
+  "version": "2.0.0",
+  "author": "Lim Chee Aun <cheeaun@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-legacy": "~1.3.2",
+    "vite": "~2.1.5"
+  },
+  "dependencies": {
+    "howler": "~2.2.1"
+  }
+}

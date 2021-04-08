@@ -1,320 +1,68 @@
 <!DOCTYPE html>
+<head>
 <meta charset="utf-8">
 <title>Bubble wrap</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;700&display=swap" rel="stylesheet">
-<link rel="preload" href="popped.svg" as="image">
-<link rel="preload" href="bubble-wrap-single-pop.mp3" as="fetch">
+<link rel="preload" href="assets/prepop.svg" as="image">
+<link rel="preload" href="assets/popped.svg" as="image">
 <link rel="icon" href="favicon.png">
-<style>
-  * {
-    font-family: 'MuseoModerno', cursive;
-  }
-  a {
-    color: #567c82;
-    text-decoration-color: #567c8288;
-  }
-  html, body {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-  body {
-    background-color: #E7EEEF;
-    color: #000;
-    font-size: .8em;
-  }
-  main {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-  }
-  header {
-    text-align: center;
-    padding: 1em;
-  }
-  header * {
-    margin: 0;
-    padding: 0;
-  }
-  header h1 {
-    text-transform: lowercase;
-    font-size: 28px;
-  }
-  button {
-    background-color: transparent;
-    border: 1px solid #000;
-    padding: 8px 14px;
-    border-radius: 99999px;
-    user-select: none;
-    line-height: 1;
-    vertical-align: middle;
-    cursor: pointer;
-  }
-  button:disabled {
-    color: inherit;
-  }
-  #bubble-wrap {
-    flex-grow: 1;
-    overflow: hidden;
-    line-height: 0px;
-    text-align: center;
-    white-space: nowrap;
-    padding: 12px;
-  }
-  .bubble {
-    display: inline-block;
-    background: transparent no-repeat center;
-    background-image:
-      url(prepop.svg),
-      radial-gradient(closest-side, rgba(0,0,0,0), rgba(0,0,0,.05) 70%, rgba(255,255,255,0) 80%);
-    box-shadow: inset 0 0 6px #fff, 2px 2px 4px #fff, 4px 4px 12px rgba(0,0,0,.25);
-    width: 50px;
-    height: 50px;
-    margin: 0 2px;
-    overflow: hidden;
-    border-radius: 99999px;
-    cursor: pointer;
-  }
-  .bubble:active,
-  .bubble.pop {
-    background-image:
-      url(popped.svg),
-      radial-gradient(closest-side, rgba(0,0,0,.15), rgba(0,0,0,.1));
-  }
-  @keyframes fallin {
-    0% {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .reset .bubble:nth-child(n) {
-    animation: fallin .3s both ease-in-out;
-  }
-  .reset .bubble:nth-child(2n) {
-    animation: fallin .3s .1s both ease-in-out;
-  }
-  .reset .bubble:nth-child(3n) {
-    animation: fallin .3s .2s both ease-in-out;
-  }
-  .reset .bubble:nth-child(4n) {
-    animation: fallin .3s .3s both ease-in-out;
-  }
-  .reset .bubble:nth-child(5n) {
-    animation: fallin .3s .4s both ease-in-out;
-  }
-  @keyframes pop {
-    0% {
-      background-color: rgba(255,255,255,0);
-      transform: scale(1);
-    }
-    5% {
-      background-color: rgba(0,0,0,.1);
-      transform: scale(.95);
-    }
-    10% {
-      transform: scale(1);
-    }
-    100% {
-      background-color: rgba(255,255,255,0);
-    }
-  }
-  .bubble.pop {
-    pointer-events: none;
-    animation: pop 1s forwards ease-in-out;
-  }
-  @keyframes unpop {
-    0% {
-      transform: scale(1);
-      background-color: rgba(255,255,255,0);
-    }
-    50% {
-      transform: scale(1.05);
-      background-color: rgba(255,255,255,.5);
-    }
-    100% {
-      transform: scale(1);
-      background-color: rgba(255,255,255,0);
-    }
-  }
-  .bubble.unpop {
-    animation: unpop .2s;
-  }
-  #level {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    text-align: center;
-    pointer-events: none;
-    opacity: .5;
-    padding: .3em;
-  }
-</style>
-<main>
-  <header>
-    <h1>Bubble wrap <button id="pop-reset-button" disabled>pop me! ッ</button></h1>
-    <p>Inspired by <a href="https://twitter.com/oochenz/status/1366402596827779075" target="_blank">oochenz</a>'s work. Sound by <a href="https://freesound.org/people/Anthousai/sounds/399334/" target="_blank">anthousai</a> &amp; <a href="https://freesound.org/people/CGEffex/sounds/89534/" target="_blank">cgeffex</a>. <a href="https://github.com/cheeaun/bubble-wrap" target="_blank">Made</a> by <a href="https://twitter.com/cheeaun" target="_blank">cheeaun</a>.</p>
-  </header>
-  <div id="bubble-wrap"></div>
-  <div id="level">Level 1</div>
-</main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.core.min.js" integrity="sha512-wzeZyTAYqFv+VKD/mGwXREXBIzy4pE3E617SBskkLFuYcPQgX6px2Il3gwZwXb9DuyjYPIsbTEO/6c3+mUvoPA==" crossorigin="anonymous"></script>
-<script>
-  var bubbleSize = 50;
-  var $wrap = document.getElementById('bubble-wrap');
-  var $resetButton = document.getElementById('pop-reset-button');
-  var $level = document.getElementById('level');
-
-  var level = 1;
-  function renderLevel() {
-    $level.textContent = 'Level ' + level;
-  }
-
-  var unpopTimers = [];
-  function resetUnpop(){
-    unpopTimers.forEach(function(t){ clearTimeout(t) });
-    unpopTimers = [];
-  };
-
-  var total = 0;
-  function render() {
-    resetUnpop();
-    resetResetButton();
-    renderLevel();
-
-    var wrapHorizontalPadding = 12 * 2;
-    var wrapVerticalPadding = 24 * 2;
-    var bubbleMargin = 2 * 2;
-    var wrapWidth = $wrap.offsetWidth - wrapHorizontalPadding;
-    var wrapHeight = $wrap.offsetHeight - wrapVerticalPadding;
-    var bubbleColCount = Math.floor(wrapWidth/(bubbleSize+bubbleMargin));
-    var bubbleAltColCount = bubbleColCount-1;
-    var bubbleRowCount = Math.floor(wrapHeight/bubbleSize);
-    var bubbleAltRowCount = Math.floor(bubbleRowCount/2);
-    var count = bubbleColCount * bubbleRowCount - bubbleAltRowCount;
-    total = count;
-    var html = '';
-    var toggleRow = true;
-    for (var i=0, col = 1; i<count; i++, col++) {
-      html += '<span class="bubble"></span>';
-      if ((toggleRow && col === bubbleColCount) || (!toggleRow && col === bubbleAltColCount)) {
-        html += '<br>';
-        toggleRow = !toggleRow;
-        col = 0;
-      }
-    }
-    $wrap.classList.add('reset');
-    setTimeout(function(){
-      $wrap.classList.remove('reset');
-    }, 1000);
-    $wrap.innerHTML = html;
-  }
-
-  var resetButton = false;
-  function resetResetButton() {
-    resetButton = false;
-    $resetButton.disabled = true;
-    $resetButton.textContent = 'pop me! ッ';
-  }
-
-  $resetButton.onclick = function(e){
-    e.preventDefault();
-    render();
-  }
-
-  var sound = new Howl({
-    src: ['bubble-wrap-single-pop.mp3'],
-    volume: 0.5,
-  });
-  var sound2 = new Howl({
-    src: ['bubble-wrap-single-unpop.mp3'],
-    volume: 0.3,
-  });
-  var startTime;
-  var checkTimer;
-  var lastPopTarget;
-  function pop(target) {
-    if (!startTime) startTime = Date.now();
-    target.classList.remove('unpop');
-    target.classList.add('pop');
-    lastPopTarget = target;
-    sound.play();
-    if (!resetButton) {
-      resetButton = true;
-      $resetButton.disabled = false;
-      $resetButton.textContent = 'Reset!'
-    }
-    clearTimeout(checkTimer);
-    checkTimer = setTimeout(function(){
-      var poppedAll = $wrap.querySelectorAll('.pop').length === total;
-      if (poppedAll) {
-        alert("Woohoo! You've popped all " + total + " of them in just " + Math.round((Date.now() - startTime)/1000) +  " seconds! Do it again!");
-        startTime = null;
-        level++;
-        render();
-      }
-    }, 300);
-
-    unpopTimers.push(setTimeout(function(){
-      var popped = [];
-      $wrap.querySelectorAll('.pop').forEach(function(poppedEl, i, arr){
-        if (poppedEl !== lastPopTarget || arr.length <= 1){
-          popped.push(poppedEl);
-        }
-      });
-      if (!popped.length) return;
-      var randomIndex = Math.floor(Math.random() * popped.length);
-      sound2.play();
-      popped[randomIndex].classList.remove('pop');
-      popped[randomIndex].classList.add('unpop');
-      unpopTimers.shift();
-    }, Math.max(1000, total * 1000 / level)));
-  }
-
-  document.body.onpointerdown = function(e) {
-    e.preventDefault();
-    var target = e.target;
-    if (target.matches('.bubble:not(.pop)')) {
-      pop(target);
-    }
-  }
-  var prevKeys = [];
-  document.body.onkeypress = function(e) {
-    var key = e.key;
-    if (key) e.preventDefault();
-    if (key && !prevKeys.includes(key)) {
-      prevKeys.push(key);
-      prevKeys = prevKeys.slice(-5); // Only prevent previous 5 unique keys
-      var prepops = $wrap.querySelectorAll('.bubble:not(.pop)');
-      var randomIndex = Math.floor(Math.random() * prepops.length);
-      var target = prepops[randomIndex];
-      if (target) {
-        pop(target);
-      }
-    }
-  }
-  document.body.addEventListener('touchstart', function(e){
-    var tagName = e.target.tagName.toLowerCase();
-    if (tagName === 'a' || tagName === 'button') return;
-    e.preventDefault();
-  }, { passive: false });
-
-  render();
-
-  var resizeTimer;
-  window.onresize = function(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(render, 1000);
-  }
-</script>
+</head>
+<div id="menu" class="dialog">
+  <div class="dialog-inner">
+    <header>
+      <h1>Bubble Wrap</h1>
+      <p>A rather satisfying bubble wrap popping&nbsp;game.</p>
+    </header>
+    <p>
+      <button type="button" class="play-dialog-button xlarge glowing">Play!</button><br>
+      <button type="button" class="how-dialog-button large">How to play?</button><br>
+      <button type="button" class="options-dialog-button large">Options</button>
+    </p>
+  </div>
+  <footer>
+    <p>Inspired by <a href="https://twitter.com/bygloo/status/1366402596827779075" target="_blank">ッ</a>. <a href="https://github.com/cheeaun/bubble-wrap" target="_blank">Made</a> by <a href="https://twitter.com/cheeaun" target="_blank">cheeaun</a>.</p>
+    <p>Sounds: <a href="https://freesound.org/people/Anthousai/sounds/399334/" target="_blank">1</a>, <a href="https://freesound.org/people/CGEffex/sounds/89534/" target="_blank">2</a>, <a href="https://freesound.org/people/Vilkas_Sound/sounds/463395/" target="_blank">3</a>, <a href="https://freesound.org/people/rhodesmas/sounds/320655/" target="_blank">4</a>.</p>
+    <p>Music by Eric Matyas <a href="https://soundimage.org/attribution-info/" target="_blank">soundimage.org</a></p>
+  </footer>
+</div>
+<div id="game">
+  <div id="toolbar">
+    <button type="button" class="menu-dialog-button">menu</button>
+    <span>Level <span id="level">1</span></span>
+    <button type="button" id="reset-button" disabled>restart</button>
+  </div>
+  <div id="bubble-wrap"><div id="bubble-wrap-inner"></div></div>
+</div>
+<div id="post-level" class="dialog" hidden>
+  <div class="dialog-inner">
+    <h2>Great job!</h2>
+    <p class="content"></p>
+    <p>
+      <button type="button" class="play-dialog-button xlarge glowing">Next level!</button>
+      <br>
+      <button type="button" class="menu-dialog-button large">Back to menu</button>
+    </p>
+  </div>
+</div>
+<div id="options" class="dialog" hidden>
+  <div class="dialog-inner">
+    <h2>Options</h2>
+    <form id="options-form">
+    <label><input type="checkbox" id="bgm-check"> <span>Background music</span></label>
+    <label><input type="checkbox" id="sfx-check"> <span>Sound effects</span></label>
+    </form>
+    <p><button type="button" class="menu-dialog-button large">Back to menu</button></p>
+  </div>
+</div>
+<div id="how" class="dialog" hidden>
+  <div class="dialog-inner">
+    <h2>How to play?</h2>
+    <p>👆 Tap on the bubbles to pop them!</p>
+    <p>🍾 After a period of time, the bubbles will "unpop" and you'll have to pop them again!</p>
+    <p>📈 Pop all of them to level up!</p>
+    <p>⚡️ As you level up, the bubbles will "unpop" faster!</p>
+    <p>⌨️ You can use your keyboard to pop them too! Simply type any random keys on your keyboard!</p>
+    <p><button type="button" class="menu-dialog-button large">Back to menu</button></p>
+  </div>
+</div>
+<script type="module" src="/main.js"></script>

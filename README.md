@@ -6,6 +6,10 @@
 
 [<img src="screenshots/1.jpg" width="320">][1] [<img src="screenshots/2.jpg" width="320">][1]
 
+🎥 YouTube https://www.youtube.com/watch?v=hbDQeqHes0I
+
+🎮 Itch·io https://cheeaun.itch.io/bubble-wrap
+
 ## Development
 
 - `npm i` - install dependencies

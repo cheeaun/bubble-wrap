@@ -4,7 +4,7 @@
 
 **[👉👉👉 bubble-wrap.party 🎉🎉🎉][1]**
 
-[<img src="screenshot.jpg" width="320">][1]
+[<img src="screenshots/1.jpg" width="320">][1] [<img src="screenshots/2.jpg" width="320">][1]
 
 ## Development
 

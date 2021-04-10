@@ -197,7 +197,7 @@ function pop(target) {
       popped[randomIndex].classList.remove('pop');
       popped[randomIndex].classList.add('unpop');
       unpopTimers.shift();
-    }, Math.max(1000, (total * 1000) / level)),
+    }, Math.max(100, (total * 1000) / level)),
   );
 }
 
